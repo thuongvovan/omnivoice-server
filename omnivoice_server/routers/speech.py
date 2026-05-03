@@ -32,6 +32,7 @@ from ..utils.instruction_validation import (
 from ..utils.text import split_sentences
 from ..voice_presets import (
     DEFAULT_DESIGN_INSTRUCTIONS,
+    CLONE_VOICE_PRESETS,
     get_openai_voice_preset,
     is_openai_voice_preset,
 )
@@ -152,6 +153,12 @@ def _resolve_synthesis_mode(
     profile_to_check = speaker_raw or voice_raw
     if profile_to_check:
         profile_id = profile_to_check
+
+        if profile_id in CLONE_VOICE_PRESETS:
+            ref_audio_path = profile_svc.get_ref_audio_path(profile_id)
+            ref_text = profile_svc.get_ref_text(profile_id)
+            return "clone", None, str(ref_audio_path), ref_text
+
         explicit_clone = profile_id.lower().startswith("clone:")
         if explicit_clone:
             profile_id = profile_id.split(":", 1)[1]
@@ -190,6 +197,17 @@ def _resolve_synthesis_mode(
                 "or omit `speaker` and use `voice`/`instructions`."
             ),
         )
+
+    if body.instructions is not None:
+        try:
+            canonicalized = validate_and_canonicalize_instructions(body.instructions)
+            logger.info(f"[TRACE] Resolved to DESIGN mode (instructions): {canonicalized}")
+            return "design", canonicalized, None, None
+        except InstructionValidationError as e:
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
+                detail=str(e),
+            )
 
     if speaker_preset:
         preset_instruct = speaker_preset
@@ -236,17 +254,6 @@ def _resolve_synthesis_mode(
                         "or supported design attributes from /v1/voices."
                     ),
                 ) from e
-
-    if body.instructions is not None:
-        try:
-            canonicalized = validate_and_canonicalize_instructions(body.instructions)
-            logger.info(f"[TRACE] Resolved to DESIGN mode (instructions): {canonicalized}")
-            return "design", canonicalized, None, None
-        except InstructionValidationError as e:
-            raise HTTPException(
-                status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
-                detail=str(e),
-            )
 
     logger.info(f"[TRACE] Resolved to DESIGN mode (default): {DEFAULT_DESIGN_INSTRUCTIONS}")
     return "design", DEFAULT_DESIGN_INSTRUCTIONS, None, None

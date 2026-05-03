@@ -4,6 +4,9 @@ from __future__ import annotations
 
 DEFAULT_DESIGN_INSTRUCTIONS = "male, middle-aged, moderate pitch, british accent"
 
+CLONE_VOICE_PRESETS = ["binh_nam_mien_bac", "doan_nu_mien_nam", "dung_nu_mien_nam", "huong_nu_mien_nam", "ly_nu_mien_bac", "ngoc_nu_mien_bac", "nguyen_nam_mien_nam", "son_nam_mien_nam", "tuyen_nu_mien_bac", "vinh_nam_mien_nam"]
+
+
 # OpenAI-compatible preset names mapped to local OmniVoice design prompts.
 # These are local heuristic presets for compatibility, not official voice clones.
 OPENAI_VOICE_PRESETS = {
