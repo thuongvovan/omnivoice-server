@@ -10,8 +10,8 @@ services:
       - "8880:8880"
     volumes:
       # Persist voice profiles
-      - ./profiles:/home/ubuntu/app/profiles
-      - ./:/home/ubuntu/.cache/huggingface # persist HF cache for offline use
+      - ./profiles:/app/profiles
+      - ./hf_cache:/tmp/huggingface
     environment:
       # Server configuration
       - OMNIVOICE_HOST=0.0.0.0

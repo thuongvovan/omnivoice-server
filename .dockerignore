@@ -1,0 +1,13 @@
+hub/
+hub/**
+**/hub/
+**/models--*
+**/.gitattributes
+__pycache__/
+*.pyc
+.git/
+.gitignore
+venv/
+.env
+.cache/
+.hf_cache/

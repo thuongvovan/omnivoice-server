@@ -38,3 +38,4 @@ temp.log
 voice_samples/*.wav
 
 .sisyphus/
+.hf_cache/
